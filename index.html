@@ -10,8 +10,8 @@
 
     <br><br>
 
-    <button id="process-button">Process Text</button>
-    <button id="clear-button">Clear Output</button>
+    <button id="add">Add Text</button>
+    <button id="check">Check Output</button>
 
     <br><br>
 
@@ -19,7 +19,48 @@
     <textarea id="output-area" name="output-area" rows="10" cols="50"></textarea>
 
     <script>
-      // JavaScript code goes here
+      const addButton = document.querySelector('#add');
+      const checkButton = document.querySelector('#check');
+      const inputField = document.querySelector('#input-field');
+      const outputArea = document.querySelector('#output-area');
+
+      addButton.addEventListener('click', () => {
+        const text = inputField.value;
+
+        // Make a POST request to the server to store the text
+        fetch('/store-text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text })
+        })
+          .then(response => {
+            if (response.ok) {
+              console.log('Text stored successfully');
+            } else {
+              console.log('Failed to store text');
+            }
+          })
+          .catch(error => {
+            console.log(`Error storing text: ${error}`);
+          });
+
+        // Clear the input field after submitting the text
+        inputField.value = '';
+      });
+
+      checkButton.addEventListener('click', () => {
+        // Make a GET request to the server to retrieve the stored text
+        fetch('/retrieve-text')
+          .then(response => response.json())
+          .then(data => {
+            outputArea.value = data.text;
+          })
+          .catch(error => {
+            console.log(`Error retrieving text: ${error}`);
+          });
+      });
     </script>
   </body>
 </html>
